@@ -17,6 +17,7 @@ public class MainController {
 	@Autowired
 	private ScrapperIMPL scrapper;
 	private Product product;
+	private List<Product> products;
 
 	@GetMapping("/product")
 	public Product getProductInfo(@RequestParam String url, @RequestParam(required = false) String tag) {
@@ -31,6 +32,11 @@ public class MainController {
 
 	@GetMapping("/search")
 	public List<Product> getProductList(@RequestParam String keyWord) {
-		return scrapper.getProductList(keyWord);
+		try {
+			products = scrapper.getProductList(keyWord);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return products;
 	}
 }

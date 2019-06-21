@@ -20,6 +20,7 @@ public class ScrapperIMPL implements Scrapper {
 	@Autowired
 	private Product product;
 	private List<Product> products;
+	private String BASE_URL = "https://www.amazon.in/s?k=";
 
 	public Product getData(String url, String affTag) throws IOException {
 		Document document = Jsoup.connect(url).userAgent("Googlebot/2.1 (+http://www.googlebot.com/bot.html)")
@@ -56,8 +57,12 @@ public class ScrapperIMPL implements Scrapper {
 	}
 
 	@Override
-	public List<Product> getProductList(String keyWord) {
+	public List<Product> getProductList(String keyWord) throws IOException {
 		products = new ArrayList<Product>();
+
+		Document document = Jsoup.connect(BASE_URL + keyWord)
+				.userAgent("Googlebot/2.1 (+http://www.googlebot.com/bot.html)").timeout(5000).get();
+
 		return products;
 	}
 }
