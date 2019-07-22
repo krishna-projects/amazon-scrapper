@@ -8,5 +8,5 @@ import com.amazon.bean.Product;
 public interface Scrapper {
 	Product getData(String url, String affTag) throws IOException;
 
-	List<Product> getProductList(String keyWord) throws IOException;
+	List<Product> getProductList(String keyWord,String p) throws IOException;
 }

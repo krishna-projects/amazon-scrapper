@@ -31,9 +31,9 @@ public class MainController {
 	}
 
 	@GetMapping("/search")
-	public List<Product> getProductList(@RequestParam String keyWord) {
+	public List<Product> getProductList(@RequestParam String keyWord,@RequestParam(required = false,defaultValue = "1") String p) {
 		try {
-			products = scrapper.getProductList(keyWord);
+			products = scrapper.getProductList(keyWord,p);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
