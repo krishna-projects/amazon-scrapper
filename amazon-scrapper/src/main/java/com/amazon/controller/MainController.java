@@ -22,15 +22,21 @@ public class MainController {
 	private ScrapperIMPL scrapper;
 	private Product product;
 	private List<Product> products;
+	private final String userAgent1 = "Googlebot/2.1 (+http://www.googlebot.com/bot.html)";
+	private final String userAgent2 = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
 
 	@ResponseBody
 	@PostMapping("/product")
 	public Product getProductInfo(@RequestParam String url, @RequestParam(required = false) String tag) {
 
 		try {
-			product = scrapper.getData(url, tag);
+			product = scrapper.getData(url, tag, userAgent1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				product = scrapper.getData(url, tag, userAgent2);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		return product;
 	}
@@ -40,9 +46,13 @@ public class MainController {
 	public List<Product> getProductList(@RequestParam String keyWord,
 			@RequestParam(required = false, defaultValue = "1") String p) {
 		try {
-			products = scrapper.getProductList(keyWord, p);
+			products = scrapper.getProductList(keyWord, p, userAgent1);
 		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				products = scrapper.getProductList(keyWord, p, userAgent2);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 		return products;
 	}
@@ -52,10 +62,15 @@ public class MainController {
 			ModelMap modelMap) {
 		if (url != null) {
 			try {
-				product = scrapper.getData(url, tag);
+				product = scrapper.getData(url, tag, userAgent1);
 				modelMap.addAttribute("product", product);
 			} catch (IOException e) {
-				e.printStackTrace();
+				try {
+					product = scrapper.getData(url, tag, userAgent2);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				modelMap.addAttribute("product", product);
 			}
 		}
 		return "index";

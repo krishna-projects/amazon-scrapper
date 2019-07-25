@@ -23,9 +23,8 @@ public class ScrapperIMPL implements Scrapper {
 	private int isIndia;
 	private String currencySymbol;
 
-	public Product getData(String url, String affTag) throws IOException {
-		Document document = Jsoup.connect(url).userAgent("Googlebot/2.1 (+http://www.googlebot.com/bot.html)")
-				.timeout(5000).get();
+	public Product getData(String url, String affTag, String userAgent) throws IOException {
+		Document document = Jsoup.connect(url).userAgent(userAgent).timeout(5000).get();
 		product = new Product();
 		Pattern p = Pattern.compile("(?:[/dp/]|$)([A-Z0-9]{10})");
 		Matcher m = p.matcher(url);
@@ -55,8 +54,8 @@ public class ScrapperIMPL implements Scrapper {
 				description.append(element.select("span.a-list-item").text() + ",");
 		}
 		product.setDescription(description.toString());
-		product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim().split(" ")[1]);
-		product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim().split(" ")[1]);
+		product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim());//.split(" ")[1]);
+		product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim());//.split(" ")[1]);
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
 		product.setImageUrl(document.select("div#imgTagWrapperId img").attr("src"));
 		product.setIsIndia(isIndia);
@@ -64,7 +63,7 @@ public class ScrapperIMPL implements Scrapper {
 	}
 
 	@Override
-	public List<Product> getProductList(String keyWord, String p) throws IOException {
+	public List<Product> getProductList(String keyWord, String p, String userAgent) throws IOException {
 		products = new ArrayList<Product>();
 		String fullUrl;
 		if (Integer.parseInt(p) < 2)
@@ -72,8 +71,7 @@ public class ScrapperIMPL implements Scrapper {
 		else
 			fullUrl = BASE_URL + SEARCH_KEYWORD + keyWord + "&page=" + p;
 
-		Document document = Jsoup.connect(fullUrl).userAgent("Googlebot/2.1 (+http://www.googlebot.com/bot.html)")
-				.timeout(5000).get();
+		Document document = Jsoup.connect(fullUrl).userAgent(userAgent).timeout(5000).get();
 
 		for (Element element : document.select("div[data-asin]")) {
 			product = new Product();
