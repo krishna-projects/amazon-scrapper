@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amazon.bean.Product;
@@ -17,28 +16,34 @@ import com.amazon.bean.Product;
 @Service
 public class ScrapperIMPL implements Scrapper {
 
-	@Autowired
 	private Product product;
 	private List<Product> products;
 	private String BASE_URL = "https://www.amazon.in";
 	private String SEARCH_KEYWORD = "/s?k=";
+	private int isIndia;
+	private String currencySymbol;
 
 	public Product getData(String url, String affTag) throws IOException {
 		Document document = Jsoup.connect(url).userAgent("Googlebot/2.1 (+http://www.googlebot.com/bot.html)")
 				.timeout(5000).get();
-
+		product = new Product();
 		Pattern p = Pattern.compile("(?:[/dp/]|$)([A-Z0-9]{10})");
 		Matcher m = p.matcher(url);
 		while (m.find()) {
 			product.setPid(m.group().substring(1));
 		}
-		if (affTag == null) {
-			if (url.contains("www.amazon.in"))
+		if (affTag.equals("")) {
+			if (url.contains("www.amazon.in")) {
 				product.setAffUrl(url.substring(0, url.indexOf("?")) + "?tag=adroitlab0f-21");
-			else
+				isIndia = 1;
+				currencySymbol = "&#8377; ";
+			} else {
 				product.setAffUrl(url.substring(0, url.indexOf("?")) + "?tag=ksharma-20");
+				isIndia = 0;
+				currencySymbol = "&#36; ";
+			}
 		} else {
-			product.setAffUrl(url + "&tag=" + affTag);
+			product.setAffUrl(url.substring(0, url.indexOf("?")) + "&tag=" + affTag);
 		}
 		product.setName(document.select("span#productTitle").text());
 		product.setCustomerCount(document.select("span#acrCustomerReviewText").text().trim().split(" ")[0]);
@@ -50,10 +55,11 @@ public class ScrapperIMPL implements Scrapper {
 				description.append(element.select("span.a-list-item").text() + ",");
 		}
 		product.setDescription(description.toString());
-		product.setMRP(document.select("span.a-text-strike").text());
-		product.setPrice(document.select("span#priceblock_ourprice").text());
+		product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim().split(" ")[1]);
+		product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim().split(" ")[1]);
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
 		product.setImageUrl(document.select("div#imgTagWrapperId img").attr("src"));
+		product.setIsIndia(isIndia);
 		return product;
 	}
 
