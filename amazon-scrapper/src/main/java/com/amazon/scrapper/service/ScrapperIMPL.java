@@ -1,4 +1,4 @@
-package com.amazon.service;
+package com.amazon.scrapper.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,9 +9,11 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amazon.bean.Product;
+import com.amazon.scrapper.bean.Product;
+import com.amazon.scrapper.repository.ProductRepository;
 
 @Service
 public class ScrapperIMPL implements Scrapper {
@@ -22,6 +24,9 @@ public class ScrapperIMPL implements Scrapper {
 	private String SEARCH_KEYWORD = "/s?k=";
 	private int isIndia;
 	private String currencySymbol;
+
+	@Autowired
+	private ProductRepository productRepository;
 
 	public Product getData(String url, String affTag, String userAgent) throws IOException {
 		Document document = Jsoup.connect(url).userAgent(userAgent).timeout(5000).get();
@@ -54,8 +59,13 @@ public class ScrapperIMPL implements Scrapper {
 				description.append(element.select("span.a-list-item").text() + ",");
 		}
 		product.setDescription(description.toString());
-		product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim());//.split(" ")[1]);
-		product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim());//.split(" ")[1]);
+		if (isIndia == 1) {
+			product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim().split(" ")[1]);
+			product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim().split(" ")[1]);
+		} else {
+			product.setMRP(document.select("span.a-text-strike").text().trim());
+			product.setPrice(document.select("span#priceblock_ourprice").text().trim());
+		}
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
 		product.setImageUrl(document.select("div#imgTagWrapperId img").attr("src"));
 		product.setIsIndia(isIndia);
@@ -92,5 +102,23 @@ public class ScrapperIMPL implements Scrapper {
 		}
 
 		return products;
+	}
+
+	@Override
+	public String save(Product product, Product editedProduct) {
+
+		product.setName(editedProduct.getName());
+		product.setMRP(editedProduct.getMRP());
+		product.setPrice(editedProduct.getPrice());
+		product.setCustomerCount(editedProduct.getCustomerCount());
+		product.setRating(editedProduct.getRating());
+		product.setDescription(editedProduct.getDescription());
+		product.setCat(editedProduct.getCat());
+
+		Product p = productRepository.save(product);
+		if (p != null)
+			return "Saved Successfully";
+		else
+			return null;
 	}
 }

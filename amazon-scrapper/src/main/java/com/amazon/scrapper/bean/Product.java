@@ -1,11 +1,13 @@
-package com.amazon.bean;
+package com.amazon.scrapper.bean;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 
 @Entity
 public class Product {
@@ -18,6 +20,7 @@ public class Product {
 	private String rating;
 	private String customerCount;
 	private String price;
+	@Column(length = 500)
 	private String description;
 	private String imageUrl;
 	private String affUrl;
@@ -29,6 +32,11 @@ public class Product {
 	private int isIndia;
 
 	public Product() {
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		this.addedOn = new Date();
 	}
 
 	public Long getId() {

@@ -1,4 +1,4 @@
-package com.amazon.controller;
+package com.amazon.scrapper.controller;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amazon.bean.Product;
-import com.amazon.service.ScrapperIMPL;
+import com.amazon.scrapper.bean.Product;
+import com.amazon.scrapper.service.ScrapperIMPL;
 
 @Controller
 public class MainController {
@@ -24,6 +24,7 @@ public class MainController {
 	private List<Product> products;
 	private final String userAgent1 = "Googlebot/2.1 (+http://www.googlebot.com/bot.html)";
 	private final String userAgent2 = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
+	private String message;
 
 	@ResponseBody
 	@PostMapping("/product")
@@ -73,6 +74,15 @@ public class MainController {
 				modelMap.addAttribute("product", product);
 			}
 		}
+		modelMap.addAttribute("message", message);
+		message = "";
 		return "index";
+	}
+
+	@PostMapping(value = "/save-to-database")
+	public String saveToDatabase(Product product, ModelMap modelMap) {
+		message = scrapper.save(this.product, product);
+		System.out.println(message);
+		return "redirect:/";
 	}
 }

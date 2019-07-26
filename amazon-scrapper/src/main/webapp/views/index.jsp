@@ -19,6 +19,10 @@
 <body onload="enableCheck()">
 	<script type="text/javascript">
 		function enableCheck() {
+			console.log("message : ${message}");
+			if ('${message}'.length > 0)
+				alert('${message}');
+
 			if ('${product.affUrl}'.length > 0)
 				$('#save').removeAttr("disabled");
 		}
@@ -48,51 +52,53 @@
 				<img src="${product.imageUrl }" alt="Product image">
 			</div>
 			<div class="col-md-6">
-				<div class="form-group">
-					<label for="Product Name">Product Name</label> <input type="text"
-						value="${product.name }" class="form-control" id="productName"
-						placeholder="Product Name">
-				</div>
-				<div class="form-group">
-					<label>MRP</label> <input type="text" class="form-control" id="mrp"
-						value="${product.MRP }" placeholder="MRP">
-				</div>
-				<div class="form-group">
-					<label for="Price">Current Price</label> <input type="text"
-						value="${product.price }" class="form-control" id="price"
-						placeholder="Current Price">
-				</div>
-				<div class="form-group">
-					<label for="Customer Reviews">Number of customer reviews</label> <input
-						value="${product.customerCount }" type="text" class="form-control"
-						id="customerCount" placeholder="Number of customer reviews">
-				</div>
-				<div class="form-group">
-					<label>Rating</label> <input type="text" class="form-control"
-						value="${product.rating }" id="rating" placeholder="rating">
-				</div>
-				<div class="form-group">
-					<label>description</label>
-					<textarea id="description" class="form-control" cols="30"
-						placeholder="Description" rows="10">${product.description}</textarea>
-				</div>
-				<div class="form-group">
-					<label class="text_danger">Select catagory</label> <select id="cat"
-						class="form-control">
-						<option>New Arrival</option>
-						<option>Popular</option>
-						<option>Gift For Him</option>
-						<option>Gift For Her</option>
-						<option>Best Deal</option>
-					</select>
-				</div>
+				<form action="save-to-database" method="post">
+					<div class="form-group">
+						<label>Product Name</label> <input type="text"
+							value="${product.name }" class="form-control" name="name"
+							placeholder="Product Name">
+					</div>
+					<div class="form-group">
+						<label>MRP</label> <input type="text" class="form-control"
+							name="MRP" value="${product.MRP }" placeholder="MRP">
+					</div>
+					<div class="form-group">
+						<label for="Price">Current Price</label> <input type="text"
+							value="${product.price }" class="form-control" name="price"
+							placeholder="Current Price">
+					</div>
+					<div class="form-group">
+						<label for="Customer Reviews">Number of customer reviews</label> <input
+							value="${product.customerCount }" type="text"
+							class="form-control" name="customerCount"
+							placeholder="Number of customer reviews">
+					</div>
+					<div class="form-group">
+						<label>Rating</label> <input type="text" class="form-control"
+							value="${product.rating }" name="rating" placeholder="rating">
+					</div>
+					<div class="form-group">
+						<label>description</label>
+						<textarea name="description" class="form-control" cols="30"
+							placeholder="Description" rows="10">${product.description}</textarea>
+					</div>
+					<div class="form-group">
+						<label class="text_danger">Select catagory</label> <select
+							name="cat" class="form-control">
+							<option>New Arrival</option>
+							<option>Popular</option>
+							<option>Gift For Him</option>
+							<option>Gift For Her</option>
+							<option>Best Deal</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<button disabled="disabled" id="save" type="submit"
+							class="btn btn-primary btn-lg btn-block mb-5">Save to
+							Database</button>
+					</div>
+				</form>
 			</div>
-		</div>
-		<div class="row">
-			<button disabled="disabled" id="save" type="button"
-				onclick="saveToDatabase()"
-				class="btn btn-primary btn-lg btn-block mb-5">Save to
-				Database</button>
 		</div>
 	</div>
 	<!-- All script -->
