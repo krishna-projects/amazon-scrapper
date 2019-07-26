@@ -25,6 +25,7 @@ public class Product {
 	private String imageUrl;
 	private String affUrl;
 	private String cat;
+	@Column(unique = true)
 	private String pid;
 
 	private Date addedOn;
