@@ -164,4 +164,10 @@ public class ScrapperIMPL implements Scrapper {
 		return products;
 	}
 
+	@Override
+	public List<Product> findByNewArrival(String country, String start) {
+		List<Product> products = productRepository.findNewArrival(country, Integer.parseInt(start));
+		return products;
+	}
+
 }

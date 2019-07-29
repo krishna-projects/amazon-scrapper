@@ -47,4 +47,9 @@ public class APIController {
 	public List<Product> getProductCategory(@RequestBody RequestBodyModel requestBody) {
 		return scrapper.findByProductCat(requestBody.getIsIndia(), requestBody.getKeyWord(), requestBody.getStart());
 	}
+
+	@PostMapping("/get-new-arrival")
+	public List<Product> getNewArrival(@RequestBody RequestBodyModel requestBody) {
+		return scrapper.findByNewArrival(requestBody.getIsIndia(), requestBody.getStart());
+	}
 }
