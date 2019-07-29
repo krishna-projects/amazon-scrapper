@@ -65,7 +65,7 @@ public class ScrapperIMPL implements Scrapper {
 
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
 		product.setImageUrl(document.select("div.imgTagWrapper img").attr("src").trim());
-		System.out.println(document.select("div.imgTagWrapper img").attr("src"));
+		System.out.println(document.select("div#imgTagWrapper img").attr("src"));
 		product.setIsIndia(isIndia);
 		return product;
 	}
