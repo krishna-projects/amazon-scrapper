@@ -32,10 +32,10 @@ public class ScrapperIMPL implements Scrapper {
 	public Product getData(String url, String affTag, String userAgent) throws IOException {
 		Document document = Jsoup.connect(url).userAgent(userAgent).timeout(5000).get();
 		product = new Product();
-		Pattern p = Pattern.compile("(?:[/dp/]|$)([A-Z0-9]{10})");
-		Matcher m = p.matcher(url);
-		while (m.find()) {
-			product.setPid(m.group().substring(1));
+		Pattern pattern = Pattern.compile("(?:[/dp/]|$)([A-Z0-9]{10})");
+		Matcher matcher = pattern.matcher(url);
+		while (matcher.find()) {
+			product.setPid(matcher.group().substring(1));
 		}
 		url = url + "?";
 		if (affTag.equals("")) {
@@ -59,13 +59,15 @@ public class ScrapperIMPL implements Scrapper {
 				description.append(element.select("span.a-list-item").text() + ",");
 		}
 		product.setDescription(description.toString());
-
 		product.setMRP(document.select("span.a-text-strike").text());
 		product.setPrice(document.select("span#priceblock_ourprice").text());
-
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
-		product.setImageUrl(document.select("div.imgTagWrapper img").attr("src").trim());
-		System.out.println(document.select("div#imgTagWrapper img").attr("src"));
+		String imageUrl = document.select("div#imgTagWrapperId img").attr("data-a-dynamic-image");
+		Pattern imagePattern = Pattern.compile("\"([^\"]*)\"");
+		Matcher matchImage = imagePattern.matcher(imageUrl);
+		while (matchImage.find()) {
+			product.setImageUrl(matchImage.group(1));
+		}
 		product.setIsIndia(isIndia);
 		return product;
 	}
@@ -152,13 +154,13 @@ public class ScrapperIMPL implements Scrapper {
 
 	@Override
 	public List<Product> findByProductName(String country, String keyword, String start) {
-		List<Product> products = productRepository.findByProductName(country, keyword, start);
+		List<Product> products = productRepository.findByProductName(country, keyword, Integer.parseInt(start));
 		return products;
 	}
 
 	@Override
 	public List<Product> findByProductCat(String country, String cat, String start) {
-		List<Product> products = productRepository.findByProductCat(country, getCategory(cat), start);
+		List<Product> products = productRepository.findByProductCat(country, getCategory(cat), Integer.parseInt(start));
 		return products;
 	}
 

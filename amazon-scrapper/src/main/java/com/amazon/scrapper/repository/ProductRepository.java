@@ -11,12 +11,11 @@ import com.amazon.scrapper.bean.Product;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long> {
-	@Query(value = "SELECT * FROM product WHERE is_india = :country ORDER BY name LIKE '%:keyword%' DESC LIMIT :start , 5", nativeQuery = true)
-	List<Product> findByProductName(@Param(value = "country") String country, @Param(value = "keyword") String keyword,
-			@Param(value = "start") String start);
+	@Query(value = "SELECT * FROM product p WHERE p.is_india = ?1 ORDER BY p.name LIKE %?2% DESC LIMIT ?3,5", nativeQuery = true)
+	List<Product> findByProductName(String country, String keyword, int start);
 
-	@Query(value = "SELECT * FROM product WHERE is_india = :country ORDER BY cat = ':cat' DESC LIMIT :start , 5", nativeQuery = true)
+	@Query(value = "SELECT * FROM product p WHERE p.is_india = ?1 ORDER BY cat = ?2 DESC LIMIT ?3 , 5", nativeQuery = true)
 	List<Product> findByProductCat(@Param(value = "country") String country, @Param(value = "cat") String cat,
-			@Param(value = "start") String start);
+			@Param(value = "start") int start);
 
 }
