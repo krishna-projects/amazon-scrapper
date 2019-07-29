@@ -22,7 +22,9 @@ public class Product {
 	private String price;
 	@Column(length = 500)
 	private String description;
+	@Column(length = 500)
 	private String imageUrl;
+	@Column(length = 500)
 	private String affUrl;
 	private String cat;
 	@Column(unique = true)

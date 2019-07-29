@@ -1,12 +1,10 @@
 package com.amazon.scrapper.controller;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +19,6 @@ public class MainController {
 	@Autowired
 	private ScrapperIMPL scrapper;
 	private Product product;
-	private List<Product> products;
 	private final String userAgent1 = "Googlebot/2.1 (+http://www.googlebot.com/bot.html)";
 	private final String userAgent2 = "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36";
 	private String message;
@@ -40,22 +37,6 @@ public class MainController {
 			}
 		}
 		return product;
-	}
-
-	@ResponseBody
-	@GetMapping("/search")
-	public List<Product> getProductList(@RequestParam String keyWord,
-			@RequestParam(required = false, defaultValue = "1") String p) {
-		try {
-			products = scrapper.getProductList(keyWord, p, userAgent1);
-		} catch (IOException e) {
-			try {
-				products = scrapper.getProductList(keyWord, p, userAgent2);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
-		return products;
 	}
 
 	@RequestMapping("")
@@ -82,7 +63,7 @@ public class MainController {
 	@PostMapping(value = "/save-to-database")
 	public String saveToDatabase(Product product, ModelMap modelMap) {
 		message = scrapper.save(this.product, product);
-		System.out.println(message);
 		return "redirect:/";
 	}
+
 }

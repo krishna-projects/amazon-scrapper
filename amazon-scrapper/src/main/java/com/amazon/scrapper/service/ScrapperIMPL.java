@@ -23,7 +23,8 @@ public class ScrapperIMPL implements Scrapper {
 	private String BASE_URL = "https://www.amazon.in";
 	private String SEARCH_KEYWORD = "/s?k=";
 	private int isIndia;
-	private String currencySymbol;
+	public static final String indianTag = "?tag=adroitlab0f-21";
+	public static final String usTag = "?tag=ksharma-20";
 
 	@Autowired
 	private ProductRepository productRepository;
@@ -36,15 +37,14 @@ public class ScrapperIMPL implements Scrapper {
 		while (m.find()) {
 			product.setPid(m.group().substring(1));
 		}
+		url = url + "?";
 		if (affTag.equals("")) {
 			if (url.contains("www.amazon.in")) {
-				product.setAffUrl(url.substring(0, url.indexOf("?")) + "?tag=adroitlab0f-21");
+				product.setAffUrl(url.substring(0, url.indexOf("?")) + indianTag);
 				isIndia = 1;
-				currencySymbol = "&#8377; ";
 			} else {
-				product.setAffUrl(url.substring(0, url.indexOf("?")) + "?tag=ksharma-20");
+				product.setAffUrl(url.substring(0, url.indexOf("?")) + usTag);
 				isIndia = 0;
-				currencySymbol = "&#36; ";
 			}
 		} else {
 			product.setAffUrl(url.substring(0, url.indexOf("?")) + "&tag=" + affTag);
@@ -59,34 +59,37 @@ public class ScrapperIMPL implements Scrapper {
 				description.append(element.select("span.a-list-item").text() + ",");
 		}
 		product.setDescription(description.toString());
-		if (isIndia == 1) {
-			product.setMRP(currencySymbol + document.select("span.a-text-strike").text().trim().split(" ")[1]);
-			product.setPrice(currencySymbol + document.select("span#priceblock_ourprice").text().trim().split(" ")[1]);
-		} else {
-			product.setMRP(document.select("span.a-text-strike").text().trim());
-			product.setPrice(document.select("span#priceblock_ourprice").text().trim());
-		}
+
+		product.setMRP(document.select("span.a-text-strike").text());
+		product.setPrice(document.select("span#priceblock_ourprice").text());
+
 		product.setRating(document.select("span#acrPopover").attr("title").trim().split(" ")[0]);
-		product.setImageUrl(document.select("div#imgTagWrapperId img").attr("src"));
+		product.setImageUrl(document.select("div.imgTagWrapper img").attr("src").trim());
+		System.out.println(document.select("div.imgTagWrapper img").attr("src"));
 		product.setIsIndia(isIndia);
 		return product;
 	}
 
 	@Override
-	public List<Product> getProductList(String keyWord, String p, String userAgent) throws IOException {
+	public List<Product> getProductList(String keyWord, String p, String userAgent, String tag) throws IOException {
 		products = new ArrayList<Product>();
 		String fullUrl;
-		if (Integer.parseInt(p) < 2)
-			fullUrl = BASE_URL + SEARCH_KEYWORD + keyWord;
+		if (tag.equals(indianTag))
+			BASE_URL = "https://www.amazon.in";
 		else
-			fullUrl = BASE_URL + SEARCH_KEYWORD + keyWord + "&page=" + p;
+			BASE_URL = "https://www.amazon.com";
+
+		fullUrl = BASE_URL + SEARCH_KEYWORD + keyWord + "&page=" + p;
 
 		Document document = Jsoup.connect(fullUrl).userAgent(userAgent).timeout(5000).get();
 
 		for (Element element : document.select("div[data-asin]")) {
 			product = new Product();
 			product.setName(element.select("span.a-size-medium.a-color-base.a-text-normal").text());
-			product.setAffUrl(BASE_URL + element.select("span a.a-link-normal").attr("href") + "?tag=adroitlab0f-21");
+			String productUrl = element.select("span a.a-link-normal").attr("href") + "?";
+			if (productUrl == "" || product.getName().length() < 5 || productUrl.length() < 10)
+				continue;
+			product.setAffUrl(BASE_URL + productUrl.substring(0, productUrl.indexOf("?")) + "?tag=adroitlab0f-21");
 			product.setCustomerCount(element.select("a span.a-size-base").text());
 			product.setImageUrl(element.select("a div.a-section.aok-relative.s-image-fixed-height img").attr("src"));
 			String prices[] = element.select("a.a-size-base.a-link-normal.s-no-hover.a-text-normal span.a-offscreen")
@@ -96,6 +99,7 @@ public class ScrapperIMPL implements Scrapper {
 			if (prices.length > 1)
 				product.setMRP(prices[1]);
 
+			product.setIsIndia(tag.equals(indianTag) ? 1 : 0);
 			product.setPid(element.attr("data-asin"));
 			product.setRating(element.select("span.a-icon-alt").text().trim().split(" ")[0]);
 			products.add(product);
@@ -113,7 +117,7 @@ public class ScrapperIMPL implements Scrapper {
 		product.setCustomerCount(editedProduct.getCustomerCount());
 		product.setRating(editedProduct.getRating());
 		product.setDescription(editedProduct.getDescription());
-		product.setCat(editedProduct.getCat());
+		product.setCat(getCategory(editedProduct.getCat()));
 
 		Product p = productRepository.save(product);
 		if (p != null)
@@ -121,4 +125,41 @@ public class ScrapperIMPL implements Scrapper {
 		else
 			return null;
 	}
+
+	private String getCategory(String cat) {
+		String category = "";
+		switch (cat) {
+		case "New Arrival":
+			category = "0";
+			break;
+		case "Popular":
+			category = "1";
+			break;
+		case "Gift For Him":
+			category = "2";
+			break;
+		case "Gift For Her":
+			category = "3";
+			break;
+		case "Best Deal":
+			category = "4";
+			break;
+		default:
+			break;
+		}
+		return category;
+	}
+
+	@Override
+	public List<Product> findByProductName(String country, String keyword, String start) {
+		List<Product> products = productRepository.findByProductName(country, keyword, start);
+		return products;
+	}
+
+	@Override
+	public List<Product> findByProductCat(String country, String cat, String start) {
+		List<Product> products = productRepository.findByProductCat(country, getCategory(cat), start);
+		return products;
+	}
+
 }
