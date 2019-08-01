@@ -143,7 +143,7 @@ public class ScrapperIMPL implements Scrapper {
 		case "Gift For Her":
 			category = "3";
 			break;
-		case "Best Deal":
+		case "Never Seen":
 			category = "4";
 			break;
 		default:
