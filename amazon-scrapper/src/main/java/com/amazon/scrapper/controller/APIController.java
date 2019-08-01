@@ -52,4 +52,14 @@ public class APIController {
 	public List<Product> getNewArrival(@RequestBody RequestBodyModel requestBody) {
 		return scrapper.findByNewArrival(requestBody.getIsIndia(), requestBody.getStart());
 	}
+
+	@PostMapping("/get-all-gifts")
+	public List<Product> getAllGifts(@RequestBody RequestBodyModel requestBody) {
+		return scrapper.findByAllGifts(requestBody.getIsIndia(), requestBody.getStart());
+	}
+
+	@PostMapping("/get-all")
+	public Iterable<Product> getAllProduct() {
+		return scrapper.getAllProducts();
+	}
 }

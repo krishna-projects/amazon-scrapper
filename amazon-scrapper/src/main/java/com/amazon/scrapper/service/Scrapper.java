@@ -17,4 +17,8 @@ public interface Scrapper {
 	List<Product> findByProductCat(String country, String cat, String start);
 
 	List<Product> findByNewArrival(String country, String start);
+
+	List<Product> findByAllGifts(String country, String start);
+
+	Iterable<Product> getAllProducts();
 }

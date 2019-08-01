@@ -170,4 +170,15 @@ public class ScrapperIMPL implements Scrapper {
 		return products;
 	}
 
+	@Override
+	public List<Product> findByAllGifts(String country, String start) {
+		List<Product> products = productRepository.findAllGifts(country, Integer.parseInt(start));
+		return products;
+	}
+
+	@Override
+	public Iterable<Product> getAllProducts() {
+		return productRepository.findAll();
+	}
+
 }
