@@ -160,7 +160,7 @@ public class ScrapperIMPL implements Scrapper {
 
 	@Override
 	public List<Product> findByProductCat(String country, String cat, String start) {
-		List<Product> products = productRepository.findByProductCat(country, getCategory(cat), Integer.parseInt(start));
+		List<Product> products = productRepository.findByProductCat(country, cat, Integer.parseInt(start));
 		return products;
 	}
 
