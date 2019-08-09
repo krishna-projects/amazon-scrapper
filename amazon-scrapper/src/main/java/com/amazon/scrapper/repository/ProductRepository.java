@@ -10,7 +10,7 @@ import com.amazon.scrapper.bean.Product;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long> {
-	@Query(value = "SELECT * FROM product p WHERE p.is_india = ?1 ORDER BY p.name LIKE %?2% DESC , p.added_on DESC LIMIT ?3,5", nativeQuery = true)
+	@Query(value = "SELECT * FROM product p WHERE p.is_india = ?1 ORDER BY lower(p.name) LIKE lower(concat('%', ?2,'%')) DESC , p.added_on DESC LIMIT ?3,5", nativeQuery = true)
 	List<Product> findByProductName(String country, String keyword, int start);
 
 	@Query(value = "SELECT * FROM product p WHERE p.is_india = ?1 ORDER BY p.cat = ?2 DESC , p.added_on DESC LIMIT ?3 , 5", nativeQuery = true)
