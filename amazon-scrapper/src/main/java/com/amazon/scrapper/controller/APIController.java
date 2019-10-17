@@ -40,7 +40,7 @@ public class APIController {
 
 	@PostMapping("/search-name")
 	public List<Product> getProductbyName(@RequestBody RequestBodyModel requestBody) {
-		return scrapper.findByProductName(requestBody.getIsIndia(), requestBody.getKeyWord(), requestBody.getStart());
+		return scrapper.findByProductName(requestBody.getIsIndia(), requestBody.getKeyWord().toLowerCase(), requestBody.getStart());
 	}
 
 	@PostMapping("/search-cat")

@@ -76,7 +76,7 @@
 					</div>
 					<div class="form-group">
 						<label>ASIN Product Id</label> <input type="text" class="form-control" value="${product.pid}"
-							name="rating" placeholder="Product Id">
+							name="pid" placeholder="Product Id">
 					</div>
 					<div class="form-group">
 						<label class="text_danger">Select catagory</label>

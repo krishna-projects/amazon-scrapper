@@ -49,14 +49,14 @@ public class ScrapperIMPL implements Scrapper {
 		} else {
 			product.setAffUrl(url.substring(0, url.indexOf("?")) + "&tag=" + affTag);
 		}
-		product.setName(document.select("span#productTitle").text());
+		product.setName(document.select("span#productTitle").text().replaceAll("[\",']", ""));
 		product.setCustomerCount(document.select("span#acrCustomerReviewText").text().trim().split(" ")[0]);
 		StringBuffer description = new StringBuffer();
 		for (Element element : document.select("ul.a-unordered-list.a-vertical.a-spacing-none li")) {
 			if (description.length() > 200)
 				break;
 			else
-				description.append(element.select("span.a-list-item").text() + ",");
+				description.append(element.select("span.a-list-item").text().replaceAll("[\",']", ""));
 		}
 		product.setDescription(description.toString());
 		product.setMRP(document.select("span.a-text-strike").text());
@@ -87,7 +87,8 @@ public class ScrapperIMPL implements Scrapper {
 
 		for (Element element : document.select("div[data-asin]")) {
 			product = new Product();
-			product.setName(element.select("span.a-size-medium.a-color-base.a-text-normal").text());
+			product.setName(
+					element.select("span.a-size-medium.a-color-base.a-text-normal").text().replaceAll("[\",']", ""));
 			String productUrl = element.select("span a.a-link-normal").attr("href") + "?";
 			if (productUrl == "" || product.getName().length() < 5 || productUrl.length() < 10)
 				continue;
@@ -113,6 +114,8 @@ public class ScrapperIMPL implements Scrapper {
 	@Override
 	public String save(Product product, Product editedProduct) {
 
+		System.out.println("Saving");
+
 		product.setName(editedProduct.getName());
 		product.setMRP(editedProduct.getMRP());
 		product.setPrice(editedProduct.getPrice());
@@ -120,7 +123,7 @@ public class ScrapperIMPL implements Scrapper {
 		product.setRating(editedProduct.getRating());
 		product.setDescription(editedProduct.getDescription());
 		product.setCat(getCategory(editedProduct.getCat()));
-
+		System.out.println(product);
 		Product p = productRepository.save(product);
 		if (p != null)
 			return "Saved Successfully";
@@ -155,12 +158,14 @@ public class ScrapperIMPL implements Scrapper {
 	@Override
 	public List<Product> findByProductName(String country, String keyword, String start) {
 		List<Product> products = productRepository.findByProductName(country, keyword, Integer.parseInt(start));
+		System.out.println("Get product by name "+products);
 		return products;
 	}
 
 	@Override
 	public List<Product> findByProductCat(String country, String cat, String start) {
 		List<Product> products = productRepository.findByProductCat(country, cat, Integer.parseInt(start));
+		System.out.println("Get product by category"+products);
 		return products;
 	}
 
