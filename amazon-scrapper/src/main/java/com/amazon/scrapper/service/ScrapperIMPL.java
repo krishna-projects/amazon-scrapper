@@ -82,7 +82,6 @@ public class ScrapperIMPL implements Scrapper {
 			BASE_URL = "https://www.amazon.com";
 
 		fullUrl = BASE_URL + SEARCH_KEYWORD + keyWord + "&page=" + p;
-
 		Document document = Jsoup.connect(fullUrl).userAgent(userAgent).timeout(5000).get();
 
 		for (Element element : document.select("div[data-asin]")) {
@@ -158,14 +157,14 @@ public class ScrapperIMPL implements Scrapper {
 	@Override
 	public List<Product> findByProductName(String country, String keyword, String start) {
 		List<Product> products = productRepository.findByProductName(country, keyword, Integer.parseInt(start));
-		System.out.println("Get product by name "+products);
+		System.out.println("Get product by name " + products);
 		return products;
 	}
 
 	@Override
 	public List<Product> findByProductCat(String country, String cat, String start) {
 		List<Product> products = productRepository.findByProductCat(country, cat, Integer.parseInt(start));
-		System.out.println("Get product by category"+products);
+		System.out.println("Get product by category" + products);
 		return products;
 	}
 
